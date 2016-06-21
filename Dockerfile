@@ -15,7 +15,6 @@ RUN apt-get update && \
                     dirb \
                     dnsutils \
                     nikto \
-                    nmap \
                     nsis \
                     openssh-client \
                     openvas \
@@ -80,6 +79,12 @@ RUN apt-get update && \
         mv arachni-1.2.1-0.5.7.1 /opt/arachni && \
         ln -s /opt/arachni/bin/* /usr/local/bin/ && \
     rm -rf /tmp/arachni* && \
+    wget https://nmap.org/dist/nmap-5.51.5.tgz && \
+        tar -zxvf nmap-5.51.5.tgz && \
+        cd nmap* && \
+        ./configure && \
+        make && \
+        make install && \
     mkdir -p /openvas && \
     wget https://svn.wald.intevation.org/svn/openvas/trunk/tools/openvas-check-setup --no-check-certificate -O /openvas/openvas-check-setup && \
     chmod a+x /openvas/openvas-check-setup && \
