@@ -86,7 +86,12 @@ RUN apt-get update && \
     apt-get clean -yq && \
     apt-get autoremove -yq && \
     rm -rf /var/lib/apt/lists/* && \
+    locale-gen en_US.UTF-8 && \
     /openvas/setup.sh
+
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 CMD /openvas/start.sh
 
