@@ -27,6 +27,7 @@ RUN apt-get update && \
                     python-setuptools \
                     rpm \
                     rsync \
+                    smbclient \
                     sqlite3 \
                     texlive-latex-base \
                     texlive-latex-extra \
@@ -83,6 +84,8 @@ RUN apt-get update && \
     mkdir -p /openvas && \
     wget https://svn.wald.intevation.org/svn/openvas/trunk/tools/openvas-check-setup --no-check-certificate -O /openvas/openvas-check-setup && \
     chmod a+x /openvas/openvas-check-setup && \
+    chmod a+x /openvas/setup.sh && \
+    chmod a+x /openvas/start.sh && \
     apt-get clean -yq && \
     apt-get autoremove -yq && \
     rm -rf /var/lib/apt/lists/* && \
@@ -91,4 +94,4 @@ RUN apt-get update && \
 CMD /openvas/start.sh
 
 # Expose UI
-EXPOSE 80 443 9390 9391 9392
+EXPOSE 443 9390 9391
