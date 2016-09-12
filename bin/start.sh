@@ -30,6 +30,17 @@ echo "Starting rebuild process..."
 echo "This may take a minute or two..."
 openvasmd --rebuild --progress
 
+# Check whether an admin user already exists
+if ! openvasmd --get-users | grep -q admin; then
+
+    # Add the user
+    echo "Adding new admin user..."
+    openvasmd --create-user=admin --role=Admin
+    echo "Setting Admin user password..."
+    openvasmd --user=admin --new-password=openvas
+	
+fi
+
 echo "Checking setup"
 /openvas/openvas-check-setup --v8 --server;
 echo "Done."
