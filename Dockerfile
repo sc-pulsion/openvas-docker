@@ -9,6 +9,7 @@ ADD config/redis.config /etc/redis/redis.config
 RUN apt-get update && \
     apt-get install software-properties-common -yq && \
     add-apt-repository ppa:mikesplain/openvas -y && \
+	add-apt-repository ppa:mrazavi/openvas -y && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install alien \
@@ -82,6 +83,7 @@ RUN apt-get update && \
         ln -s /opt/arachni/bin/* /usr/local/bin/ && \
     rm -rf /tmp/arachni* && \
     mkdir -p /openvas && \
+	mkdir -p /var/lib/openvas/scap-data/private && \
     wget https://svn.wald.intevation.org/svn/openvas/trunk/tools/openvas-check-setup --no-check-certificate -O /openvas/openvas-check-setup && \
     chmod a+x /openvas/openvas-check-setup && \
     chmod a+x /openvas/setup.sh && \

@@ -23,12 +23,12 @@ openvas-scapdata-sync
 openvas-certdata-sync
 
 echo "Starting Openvas..."
-/etc/init.d/openvas-manager start
-/etc/init.d/openvas-scanner start
+service openvas-manager restart
+service openvas-scanner restart
 
 echo "Starting rebuild process..."
 echo "This may take a minute or two..."
-openvasmd --rebuild
+openvasmd --rebuild --progress
 
 echo "Checking setup"
 /openvas/openvas-check-setup --v8 --server;
