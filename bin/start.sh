@@ -42,6 +42,9 @@ if ! openvasmd --get-users | grep -q admin; then
 	# Since this is a first time run we need to rebuild again to fix OIDs displaying instead of titles
 	openvasmd --rebuild
 	
+	# Sometimes the manager dies after the second rebuild
+	service openvas-manager restart
+	
 fi
 
 echo "Checking setup"

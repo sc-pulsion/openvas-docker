@@ -14,3 +14,7 @@ until docker logs --tail=15 openvas | grep -E 'It seems like your OpenVAS-8 inst
 done
 
 docker logs --tail=15 openvas | grep -E 'It seems like your OpenVAS-8 installation is OK'
+
+
+## To do
+## Enable mail alerts

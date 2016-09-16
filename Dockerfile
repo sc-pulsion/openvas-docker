@@ -3,15 +3,14 @@
 FROM ubuntu:14.04
 MAINTAINER Mike Splain mike.splain@gmail.com
 
-ADD bin/* /openvas/
-ADD config/redis.config /etc/redis/redis.config
+COPY bin/start.sh /openvas/
+COPY config/redis.config /etc/redis/
 
 RUN apt-get update && \
     apt-get install software-properties-common -yq && \
     add-apt-repository ppa:mikesplain/openvas -y && \
     add-apt-repository ppa:mrazavi/openvas -y && \
     apt-get update && \
-    apt-get upgrade -y && \
     apt-get install alien \
                     dirb \
                     dnsutils \
@@ -102,15 +101,19 @@ RUN apt-get update && \
     mkdir -p /var/lib/openvas/scap-data/private && \
     wget https://svn.wald.intevation.org/svn/openvas/trunk/tools/openvas-check-setup --no-check-certificate -O /openvas/openvas-check-setup && \
     chmod a+x /openvas/openvas-check-setup && \
-    chmod a+x /openvas/setup.sh && \
     chmod a+x /openvas/start.sh && \
-    apt-get clean -yq && \
     apt-get autoremove -yq && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+	mkdir -p /var/run/redis && \
+	redis-server /etc/redis/redis.config && \
+	ldconfig && \
+	openvas-mkcert -q && \
+	openvas-mkcert-client -n om -i && \
+	openvas-nvt-sync && \
+	openvas-scapdata-sync && \
+	openvas-certdata-sync
 
-RUN /openvas/setup.sh
-
-CMD /openvas/start.sh
+CMD ["/openvas/start.sh"]
 
 # Expose UI
 EXPOSE 443 9390 9391
