@@ -106,8 +106,9 @@ RUN apt-get update && \
     chmod a+x /openvas/start.sh && \
     apt-get clean -yq && \
     apt-get autoremove -yq && \
-    rm -rf /var/lib/apt/lists/* && \
-    /openvas/setup.sh
+    rm -rf /var/lib/apt/lists/*
+
+RUN /openvas/setup.sh
 
 CMD /openvas/start.sh
 

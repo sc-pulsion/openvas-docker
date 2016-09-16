@@ -15,7 +15,7 @@ cd /usr/local/sbin
 
 echo "Starting gsad"
 # http://wiki.openvas.org/index.php/Edit_the_SSL_ciphers_used_by_GSAD
-gsad --gnutls-priorities="SECURE128:-AES-128-CBC:-CAMELLIA-128-CBC:-VERS-SSL3.0:-VERS-TLS1.0" $set_http_only
+gsad --gnutls-priorities="SECURE256:-VERS-TLS-ALL:+VERS-TLS1.2" $set_http_only
 
 echo "Updating NVTs, CVEs, CPEs..."
 openvas-nvt-sync
@@ -28,7 +28,7 @@ service openvas-scanner restart
 
 echo "Starting rebuild process..."
 echo "This may take a minute or two..."
-openvasmd --rebuild --progress
+openvasmd --rebuild
 
 # Check whether an admin user already exists
 if ! openvasmd --get-users | grep -q admin; then
@@ -39,10 +39,13 @@ if ! openvasmd --get-users | grep -q admin; then
     echo "Setting Admin user password..."
     openvasmd --user=admin --new-password=openvas
 	
+	# Since this is a first time run we need to rebuild again to fix OIDs displaying instead of titles
+	openvasmd --rebuild
+	
 fi
 
 echo "Checking setup"
-/openvas/openvas-check-setup --v8 --server;
+/openvas/openvas-check-setup --v8 --server
 echo "Done."
 
 echo "Starting infinite loop..."

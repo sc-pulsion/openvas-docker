@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Adapted test from http://www.openvas.org/install-packages-v6.html
-
 echo "Starting setup..."
 
 mkdir -p /var/run/redis
