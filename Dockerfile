@@ -14,6 +14,7 @@ RUN apt-get update && \
     apt-get install alien \
                     dirb \
                     dnsutils \
+                    fakeroot \
                     nikto \
                     nmap \
                     nsis \
@@ -27,13 +28,20 @@ RUN apt-get update && \
                     python-setuptools \
                     rpm \
                     rsync \
+                    scp \
+                    sendmail \
                     smbclient \
+                    socat \
                     sqlite3 \
+                    sshpass \
                     texlive-latex-base \
                     texlive-latex-extra \
                     texlive-latex-recommended \
                     wapiti \
                     wget \
+                    xmlstarlet \
+                    xsltproc \
+                    zip \
                     -yq && \
     mkdir /osp && \
     cd /osp && \
@@ -97,7 +105,6 @@ RUN apt-get update && \
         mv arachni-1.4-0.5.10 /opt/arachni && \
         ln -s /opt/arachni/bin/* /usr/local/bin/ && \
     rm -rf /tmp/arachni* && \
-    mkdir -p /openvas && \
     mkdir -p /var/lib/openvas/scap-data/private && \
     wget https://svn.wald.intevation.org/svn/openvas/trunk/tools/openvas-check-setup --no-check-certificate -O /openvas/openvas-check-setup && \
     chmod a+x /openvas/openvas-check-setup && \
@@ -108,7 +115,7 @@ RUN apt-get update && \
 	redis-server /etc/redis/redis.config && \
 	ldconfig && \
 	openvas-mkcert -q && \
-	openvas-mkcert-client -n om -i && \
+	openvas-mkcert-client -n -i && \
 	openvas-nvt-sync && \
 	openvas-scapdata-sync && \
 	openvas-certdata-sync
