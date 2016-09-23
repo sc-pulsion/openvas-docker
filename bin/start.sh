@@ -9,6 +9,10 @@ cd /usr/local/sbin
 echo "Starting gsad"
 gsad --gnutls-priorities="SECURE256:-VERS-TLS-ALL:+VERS-TLS1.2"
 
+echo "Starting w3af..."
+openvasmd --modify-scanner=`openvasmd --get-scanners | grep "OSP w3af" | cut -c1-36` --scanner-ca-pub=/var/lib/openvas/CA/cacert.pem --scanner-key-pub=/var/lib/openvas/CA/clientcert.pem --scanner-key-priv=/var/lib/openvas/private/CA/clientkey.pem
+ospd-w3af -p 9392 -k /var/lib/openvas/private/CA/clientkey.pem -c /var/lib/openvas/CA/clientcert.pem --ca-file /var/lib/openvas/CA/cacert.pem --background
+
 echo "Updating NVTs, CVEs, CPEs..."
 openvas-nvt-sync
 openvas-scapdata-sync

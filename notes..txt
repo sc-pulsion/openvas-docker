@@ -1,0 +1,74 @@
+#docker build -t openvas /home/scampbell/openvas-docker
+
+docker run -d -p 443:443 -p 9390:9390 -p 9391:9391 -v /dev/urandom:/dev/random -v /home/scampbell/openvasDB:/var/lib/openvas/mgr -v /home/scampbell/openvasDB:/var/lib/openvas/gnupg --name openvas openvas
+
+
+#ca_pub
+#/var/lib/openvas/CA/cacert.pem
+#key_pub
+#/var/lib/openvas/CA/clientcert.pem
+#key_priv
+#/var/lib/openvas/private/CA/clientkey.pem
+
+#delete from nvt_cves;
+#delete from nvt_preferences;
+#delete from nvt_selectors;
+#delete from nvts;
+
+#openvasmd --create-scanner=NewScanner
+
+#update scanners set ca_pub = (select ca_pub from scanners where name = 'NewScanner') where name = 'OpenVAS Default';
+#update scanners set key_pub = (select key_pub from scanners where name = 'NewScanner') where name = 'OpenVAS Default';
+#update scanners set key_priv = (select key_priv from scanners where name = 'NewScanner') where name = 'OpenVAS Default';
+
+#openvasmd --verify-scanner=08b69003-5fc2-4037-a479-93b440211c73
+
+http://plugins.openvas.org/ova_503.txt <<< do this using opoenvasmd
+
+#lsc_credentials
+
+#echo "update scanners set ca_pub = '" >> sql.tmp
+#cat /var/lib/openvas/CA/cacert.pem >> sql.tmp
+#echo "' where name = 'OpenVAS Default';" >> sql.tmp
+#echo "update scanners set key_pub = '" >> sql.tmp
+#cat /var/lib/openvas/CA/clientcert.pem >> sql.tmp
+#echo "' where name = 'OpenVAS Default';" >> sql.tmp
+#echo "update scanners set key_priv = '" >> sql.tmp
+#cat /var/lib/openvas/private/CA/clientkey.pem >> sql.tmp
+#echo "' where name = 'OpenVAS Default';" >> sql.tmp
+#sqlite3 -echo /var/lib/openvas/mgr/tasks.db < sql.tmp
+#rm sql.tmp
+
+#sqlite3 -echo /var/lib/openvas/mgr/tasks.db "select ca_pub from scanners where name = 'OpenVAS Default'"
+
+
+
+
+
+apt remove python-setuptools -y
+apt-get autoremove -y
+wget https://bootstrap.pypa.io/ez_setup.py -O - | python
+wget https://bootstrap.pypa.io/get-pip.py -O - | python
+apt update
+apt install git libssl-dev libffi-dev python2.7-dev libsqlite3-dev libxslt1-dev libyaml-dev libxml2-dev -y
+pip install pyClamd==0.3.15 PyGithub==1.21.0 GitPython==0.3.2.RC1 pybloomfiltermmap==0.3.14 esmre==0.3.1 phply==0.9.1 nltk==3.0.1 chardet==2.1.1 tblib==0.2.0 pdfminer==20140328 futures==2.1.5 pyOpenSSL==0.15.1 ndg-httpsclient==0.3.3 pyasn1==0.1.8 lxml==3.4.4 scapy-real==2.2.0-dev guess-language==0.2 cluster==1.1.1b3 msgpack-python==0.4.4 python-ntlm==1.0.1 halberd==0.2.4 darts.util.lru==0.5 Jinja2==2.7.3 vulndb==0.0.19 markdown==2.6.1 psutil==2.2.1 termcolor==1.1.0 mitmproxy==0.13 ruamel.ordereddict==0.4.8 Flask==0.10.1 PyYAML==3.11 tldextract==1.7.2
+sed -i "s/'python-pip', //g" /w3af/w3af/core/controllers/dependency_check/platforms/ubuntu1204.py
+sed -i "s/'python-setuptools', //g" /w3af/w3af/core/controllers/dependency_check/platforms/ubuntu1204.py
+git clone https://github.com/andresriancho/w3af.git
+ln -s /w3af/w3af_console /usr/local/bin/w3af_console
+ospd-w3af -p 9392 -k /var/lib/openvas/private/CA/clientkey.pem -c /var/lib/openvas/CA/clientcert.pem --ca-file /var/lib/openvas/CA/cacert.pem -L debug --background
+
+
+
+
+
+openvasmd --create-scanner="OSP w3af" --scanner-host=127.0.0.1 --scanner-port=9392 --scanner-type="OSP" --scanner-ca-pub=/var/lib/openvas/CA/cacert.pem --scanner-key-pub=/var/lib/openvas/CA/clientcert.pem --scanner-key-priv=/var/lib/openvas/private/CA/clientkey.pem
+openvasmd --get-scanners
+openvasmd --verify-scanner=32af0f45-1cda-43c7-8d06-a74e32d4978f
+openvasmd --delete-scanner=7adccb34-80c2-467f-acb6-44040e189c41
+
+
+
+
+
+

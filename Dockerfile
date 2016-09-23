@@ -15,6 +15,13 @@ RUN apt-get update && \
                     dirb \
                     dnsutils \
                     fakeroot \
+                    git \
+                    libffi-dev \
+                    libsqlite3-dev \
+                    libssl-dev \
+                    libxml2-dev \
+                    libxslt1-dev \
+                    libyaml-dev \
                     nikto \
                     nmap \
                     nsis \
@@ -23,12 +30,10 @@ RUN apt-get update && \
                     openvas-smb \
                     psmisc \
                     python \
+                    python2.7-dev \
                     python-paramiko \
-                    python-pip \
-                    python-setuptools \
                     rpm \
                     rsync \
-                    scp \
                     sendmail \
                     smbclient \
                     socat \
@@ -43,6 +48,42 @@ RUN apt-get update && \
                     xsltproc \
                     zip \
                     -yq && \
+    wget https://bootstrap.pypa.io/ez_setup.py -O - | python && \
+    wget https://bootstrap.pypa.io/get-pip.py -O - | python && \
+    pip install chardet==2.1.1 \
+                cluster==1.1.1b3 \
+                darts.util.lru==0.5 \
+                esmre==0.3.1 \
+                Flask==0.10.1 \
+                futures==2.1.5 \
+                GitPython==0.3.2.RC1 \
+                guess-language==0.2 \
+                halberd==0.2.4 \
+                Jinja2==2.7.3 \
+                lxml==3.4.4 \
+                markdown==2.6.1 \
+                mitmproxy==0.13 \
+                msgpack-python==0.4.4 \
+                ndg-httpsclient==0.3.3 \
+                nltk==3.0.1 \
+                pdfminer==20140328 \
+                Pexpect \
+                phply==0.9.1 \
+                psutil==2.2.1 \
+                pyasn1==0.1.8 \
+                pybloomfiltermmap==0.3.14 \
+                pyClamd==0.3.15 \
+                PyGithub==1.21.0 \
+                pyOpenSSL==0.15.1 \
+                python-ntlm==1.0.1 \
+                PyYAML==3.11 \
+                requests \
+                ruamel.ordereddict==0.4.8 \
+                scapy-real==2.2.0-dev \
+                tblib==0.2.0 \
+                termcolor==1.1.0 \
+                tldextract==1.7.2 \
+                vulndb==0.0.19 && \
     mkdir /osp && \
     cd /osp && \
         wget http://wald.intevation.org/frs/download.php/1999/ospd-1.0.0.tar.gz && \
@@ -78,7 +119,6 @@ RUN apt-get update && \
     cd /osp/ospd-1.0.2 && \
         python setup.py install && \
     cd /osp/ospd-ancor-1.0.0 && \
-        pip install requests && \
         python setup.py install && \
     cd /osp/ospd-debsecan-1.0.0 && \
         python setup.py install && \
@@ -87,7 +127,6 @@ RUN apt-get update && \
     cd /osp/ospd-paloalto-1.0b1 && \
         python setup.py install && \
     cd /osp/ospd-w3af-1.0.0 && \
-        pip install Pexpect && \
         python setup.py install && \
     cd /osp/ospd-acunetix-1.0b1 && \
         python setup.py install && \
@@ -111,15 +150,23 @@ RUN apt-get update && \
     chmod a+x /openvas/start.sh && \
     apt-get autoremove -yq && \
     rm -rf /var/lib/apt/lists/* && \
-	mkdir -p /var/run/redis && \
-	redis-server /etc/redis/redis.config && \
-	ldconfig && \
-	openvas-mkcert -q && \
-	openvas-mkcert-client -n -i && \
-	openvas-nvt-sync && \
-	openvas-scapdata-sync && \
-	openvas-certdata-sync
-
+    mkdir -p /var/run/redis && \
+    redis-server /etc/redis/redis.config && \
+    ldconfig && \
+    openvas-mkcert -q && \
+    openvas-mkcert-client -n -i && \
+    openvas-nvt-sync && \
+    openvas-scapdata-sync && \
+    openvas-certdata-sync && \
+    openvasmd --create-scanner="OSP w3af" --scanner-host=127.0.0.1 --scanner-port=9392 --scanner-type="OSP" && \
+    cd / && \
+    git clone https://github.com/andresriancho/w3af.git && \
+    sed -i "s/'python-pip', //g" /w3af/w3af/core/controllers/dependency_check/platforms/ubuntu1204.py && \
+    sed -i "s/'python-setuptools', //g" /w3af/w3af/core/controllers/dependency_check/platforms/ubuntu1204.py && \
+    mkdir ~/.w3af/ && \
+    printf "[STARTUP_CONFIG]\nauto-update = false\naccepted-disclaimer = true\n" >  ~/.w3af/startup.conf && \
+    ln -s /w3af/w3af_console /usr/local/bin/w3af_console
+	
 CMD ["/openvas/start.sh"]
 
 # Expose UI
